@@ -1,14 +1,13 @@
 # Python code below
 # Define a node class for the linked list
 
-string = input("Ingresa tu polindromo: ")
+string = input()
 
 class Node:
-  def __init__(self, data):
-    self.data = data
-    self.next = None
+    def __init__(self, data):
+        self.data = data
+        self.next = None
 
-# Define a stack class using a linked list
 class Stack:
     def __init__(self):
         self.head = None
@@ -32,24 +31,32 @@ class Stack:
     
     def isEmpty(self):
         return self.head is None
-
+    
 # Define a function that checks if a string is a palindrome using a stack
 def isPalindrome(string):
-  string = string.lower()
-  string = string.replace(" ", "")
-  string = string.replace("á", "a")
-  string = string.replace("í", "i")
-  string = string.replace("é", "e")
-  string = string.replace("ó", "o")
-  string = string.replace("ú", "u")
-  
-  a = 0
-  b = len(string) - 1
+  string_normalizada = ''.join(char.lower() for char in string if char.isalnum())
 
-  for i in range (0, len(string)):
-        if string[a] == string[b]:
-            a += 1
-            b -= 1
-        else:
-            return False
-        return True
+  stack = Stack()
+
+  if not string_normalizada:
+      return False
+
+
+  mitad = len(string_normalizada) // 2
+  for char in string_normalizada[:mitad]:
+     stack.push(char)
+
+  if len(string_normalizada) % 2 != 0:
+     mitad += 1
+     
+
+  for char in string_normalizada[mitad:]:
+    if char != stack.pop():
+        return False
+    
+
+  return True
+
+if isPalindrome(string):
+   print(True)
+else: print(False)
