@@ -5,7 +5,7 @@ from SemiLingo.Languages.Espanol.MenuEspanol import MenuEspanol
 
 class Menu:
     def __init__(self):
-        self.menu_items = ["|1| Espanol", "|2| English", "|3| Nihongo", "|4| Latin"]
+        self.menu_items = ["|1| Espanol", "|2| Ingles", "|3| Nihongo", "|4| Latin"]
 
     def display_menu(self):
         message = "Chose a language:"
@@ -23,7 +23,6 @@ class Menu:
         while True:
             try:
                 user_choice = int(input())
-
                 if 1 <= user_choice <= len(self.menu_items):
                     return user_choice
                 else:
@@ -41,7 +40,7 @@ if __name__ == "__main__":
 
     if choice == 1:
         spanish_menu = MenuEspanol()
-        spanish_menu.display_menu()
+        spanish_menu.display_MenuEspanol()
 
     else:
         print("You choose a language other than Spanish, hmm odd")
