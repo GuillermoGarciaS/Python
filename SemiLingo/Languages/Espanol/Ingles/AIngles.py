@@ -26,7 +26,7 @@ class TestIngles:
 
 
 if __name__ == '__main__':
-    test = Test()
+    test = TestIngles()
     test.display_options()
     choice = test.get_options()
 
