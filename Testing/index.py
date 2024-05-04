@@ -47,3 +47,70 @@ display_button.pack()
 
 # Corremos
 window.mainloop()
+
+
+# Trigger
+
+# Conexión a la base de datos
+client = MongoClient('localhost', 27017)
+db = client['nombre_de_tu_base_de_datos']
+
+# Crear la colección para el trigger con un esquema de validación
+db.create_collection(
+    "VueloTrigger",
+    validator={
+        '$jsonSchema': {
+            'bsonType': 'object',
+            'required': ['Numero_vuelo', 'Estado_Vuelo', 'Capacidad_Vuelo'],
+            'properties': {
+                'Numero_vuelo': {
+                    'bsonType': 'string',
+                    'description': 'Debe ser una cadena y es obligatorio'
+                },
+                'Estado_Vuelo': {
+                    'bsonType': 'string',
+                    'description': 'Debe ser una cadena y es obligatorio'
+                },
+                'Capacidad_Vuelo': {
+                    'bsonType': 'int',
+                    'minimum': 0,
+                    'maximum': 160,
+                    'description': 'Debe ser un entero entre 0 y 160 y es obligatorio'
+                }
+            }
+        }
+    },
+    validationLevel='moderate',
+    validationAction='error'
+)
+
+# Insertar un documento de ejemplo en la colección VueloTrigger
+db.VueloTrigger.insert_one({
+    'Numero_vuelo': 'VL123',
+    'Estado_Vuelo': 'Programado',
+    'Capacidad_Vuelo': 160
+})
+
+# Activar el trigger en la colección Vuelo
+with db.Vuelo.watch([
+    # Seleccionar solo las operaciones de inserción
+    {'$match': {'operationType': 'insert'}},
+    # No incluir el _id del documento en el resultado
+    {'$project': {'documentKey': False}}
+]) as stream:
+    for change in stream:
+        # Obtener el documento insertado
+        vuelo = change['fullDocument']
+        # Verificar la capacidad restante del vuelo y actualizar el estado en consecuencia
+        if vuelo['Capacidad_Vuelo'] == 0:
+            # Si la capacidad es cero, actualizar el estado a "Agotado"
+            db.Vuelo.update_one(
+                {'_id': vuelo['_id']},
+                {'$set': {'Estado_Vuelo': 'Agotado'}}
+            )
+        elif vuelo['Capacidad_Vuelo'] < 50:
+            # Si la capacidad es menor a 50, actualizar el estado a "Casi completo"
+            db.Vuelo.update_one(
+                {'_id': vuelo['_id']},
+                {'$set': {'Estado_Vuelo': 'Casi completo'}}
+            )
