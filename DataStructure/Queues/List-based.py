@@ -25,7 +25,7 @@ class Queue:
     def size(self):
         return len(self.queue)
 
-#Creamos
+#Creamos la lista
 
 lista = Queue()
 
